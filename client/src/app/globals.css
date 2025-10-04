@@ -1,26 +1,280 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-background: #0a101f;
+  /* Deep Blue */
+  --color-surface: #1e293b;
+  /* Slate 800 */
+  --color-foreground: #e2e8f0;
+  /* Slate 200 */
+  --color-muted: #94a3b8;
+  /* Slate 400 */
+  --color-border: #334155;
+  /* Slate 700 */
+
+  /* Accent Colors (Indian Market Theme) */
+  --color-primary: #ea580c;
+  /* Orange 600 - For main actions */
+  --color-primary-hover: #c2410c;
+  /* Orange 700 */
+  --color-secondary: #f97316;
+  /* Orange 500 - For links & highlights */
+
+  /* Semantic Colors */
+  --color-success: #16a34a;
+  /* Green 600 */
+  --color-danger: #dc2626;
+  /* Red 600 */
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Core Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  to {
+    opacity: 1;
   }
 }
 
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Base Styles */
+* {
+  border-color: var(--color-dark-700);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-dark-950);
+  color: var(--color-dark-100);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Custom Component Classes */
+.card {
+  background-color: var(--color-dark-900);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-dark-800);
+  padding: 1.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-dark-700);
+}
+
+/* Buttons */
+.btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-dark-950), 0 0 0 4px var(--color-primary-500);
+}
+
+.btn-primary {
+  background-color: var(--color-primary-600);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-700);
+}
+
+.btn-success {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: var(--color-success-dark);
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--color-danger-dark);
+}
+
+.btn-outline {
+  border: 1px solid var(--color-dark-700);
+  color: var(--color-dark-300);
+  background-color: transparent;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--color-dark-800);
+}
+
+/* Button Loading State */
+.btn.loading {
+  cursor: wait;
+  color: transparent !important;
+  position: relative;
+}
+
+.btn.loading .spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-top-color: white;
+}
+
+/* Inputs & Forms */
+.input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background-color: var(--color-dark-800);
+  border: 1px solid var(--color-dark-700);
+  border-radius: 0.5rem;
+  color: var(--color-dark-100);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input::placeholder {
+  color: var(--color-dark-500);
+}
+
+.input:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 20%, transparent);
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-dark-300);
+  margin-bottom: 0.5rem;
+}
+
+.error-text {
+  font-size: 0.875rem;
+  color: var(--color-danger);
+  margin-top: 0.5rem;
+}
+
+/* Price Indicators (Important for Trading UI) */
+.price-up {
+  color: var(--color-success);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.price-down {
+  color: var(--color-danger);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.price-neutral {
+  color: var(--color-dark-300);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  font-size: 0.875rem;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.table-header {
+  font-size: 0.75rem;
+  color: var(--color-dark-300);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-dark-800);
+}
+
+.table-row {
+  border-bottom: 1px solid var(--color-dark-800);
+}
+
+.table-cell {
+  padding: 0.75rem 1rem;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background-color: var(--color-dark-800);
+  border: none;
+  margin: 1rem 0;
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 2px solid var(--color-dark-700);
+  border-top-color: var(--color-primary-500);
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  animation: spin 0.6s linear infinite;
+}
+
+/* Core Animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
 }

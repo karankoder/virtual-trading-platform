@@ -17,7 +17,7 @@ const schema = new mongoose.Schema(
             type: String,
             select: false,
         },
-        balance: { type: Number, default: 100000 },
+        balance: { type: Number, default: 10000000 },
     },
     { timestamps: true },
 );
