@@ -29,4 +29,4 @@ const PortfolioSchema = new mongoose.Schema(
 // This compound index ensures that each user can have only one portfolio document per asset.
 PortfolioSchema.index({ user: 1, asset: 1 }, { unique: true });
 
-module.exports = mongoose.model("Portfolio", PortfolioSchema);
+export const Portfolio = mongoose.model("Portfolio", PortfolioSchema);

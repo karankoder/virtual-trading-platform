@@ -7,14 +7,13 @@ import { Verification } from "../models/verification.js";
 
 export const createNewUser = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
+        const { username, email, password } = req.body;
 
         let user = await User.findOne({ email });
         if (user) {
             return next(new ErrorHandler("User Already Exist", 404));
         }
-
-        sendVerification(email, name, password, res);
+        sendVerification(email, username, password, res);
     } catch (error) {
         next(error);
     }
@@ -57,7 +56,7 @@ export const userLogin = async (req, res, next) => {
             return next(new ErrorHandler("Invalid Password!", 404));
         }
 
-        saveCookie(user, res, next, 200, `Welcome Back, ${user.name}`);
+        saveCookie(user, res, next, 200, `Welcome Back, ${user.username}`);
     } catch (error) {
         next(error);
     }
@@ -73,7 +72,7 @@ export const verifyEmail = async (req, res, next) => {
         const hashedpswd = await bcrypt.hash(verification.password, 5);
 
         const user = await User.create({
-            name: verification.name,
+            username: verification.username,
             email: verification.email,
             password: hashedpswd,
         });

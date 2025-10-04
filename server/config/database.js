@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { dbName, mongoUri } from "./constants";
+import { dbName, mongoUri } from "./constants.js";
 
 export const connectDB = () => {
     mongoose

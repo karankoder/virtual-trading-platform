@@ -1,7 +1,8 @@
 import express from "express";
 import "./utils/config.js";
 import userRouter from "./routes/user.js";
-import taskRouter from "./routes/task.js";
+import marketRouter from "./routes/market.js";
+import portfolioRouter from "./routes/portfolio.js";
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middlewares/error.js";
 import passport from "passport";
@@ -15,7 +16,7 @@ export const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-console.log(process.env.FRONTEND_URL);
+
 app.use(
     cors({
         origin: [process.env.LOCAL_FRONTEND_URL, process.env.FRONTEND_URL],
@@ -56,7 +57,8 @@ app.get(
 );
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/tasks", taskRouter);
+app.use("/api/v1/market", marketRouter);
+app.use("/api/v1/portfolio", portfolioRouter);
 
 app.get("/", (req, res) => {
     res.send("Server is working");

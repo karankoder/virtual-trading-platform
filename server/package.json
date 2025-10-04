@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -19,7 +20,10 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "redis": "^5.8.3",
+    "yahoo-finance2": "^2.13.3"
   },
   "devDependencies": {
     "eslint-config-prettier": "^10.1.8",
