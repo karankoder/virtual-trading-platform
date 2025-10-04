@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, ChangeEvent, FormEvent } from 'react';
 import {
   Lock,
@@ -10,6 +9,7 @@ import {
   CheckCircle2,
   BarChart2,
 } from 'lucide-react';
+import { appName } from '../../../lib/constants';
 
 interface FormData {
   username: string;
@@ -156,7 +156,7 @@ const RegisterPage: React.FC = () => {
         <div className='relative z-10 max-w-lg animate-fade-in'>
           <div className='mb-8 flex items-center gap-4'>
             <BarChart2 className='w-12 h-12 text-secondary' />
-            <span className='text-2xl font-bold text-white'>MarketSim</span>
+            <span className='text-2xl font-bold text-white'>{appName}</span>
           </div>
           <h1 className='text-4xl font-bold mb-6 text-white leading-tight'>
             Navigate the Dalal Street Maze, Risk-Free.

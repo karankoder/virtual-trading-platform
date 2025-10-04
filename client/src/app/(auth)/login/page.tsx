@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { Lock, User, Eye, EyeOff, BarChart2 } from 'lucide-react';
+import { appName } from '../../../lib/constants';
 
 type FormData = {
   username: string;
@@ -257,7 +258,7 @@ const LoginPage: React.FC = () => {
         <div className='relative z-10 max-w-lg animate-fade-in'>
           <div className='mb-8 flex items-center gap-4'>
             <BarChart2 className='w-12 h-12 text-secondary' />
-            <span className='text-2xl font-bold text-white'>MarketSim</span>
+            <span className='text-2xl font-bold text-white'>{appName}</span>
           </div>
           <h1 className='text-4xl font-bold mb-6 text-white leading-tight'>
             Welcome Back to the Trading Floor.
