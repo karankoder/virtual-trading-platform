@@ -43,8 +43,10 @@ export const portfolioService = {
 };
 
 export const marketService = {
-  getOhlc: (asset: string) => api.get(`/market/ohlc?asset=${asset}`),
+  getOhlc: (asset: string, timeframe: string) =>
+    api.get(`/market/ohlc?asset=${asset}&timeframe=${timeframe}`),
   search: (query: string) => api.get(`/market/search?query=${query}`),
   getQuote: (symbol: string) => api.get(`/market/quote?symbol=${symbol}`),
   getStatus: () => api.get('/market/status'),
+  getMarketMovers: () => api.get('/market/movers'),
 };

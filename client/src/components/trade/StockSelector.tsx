@@ -1,13 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, TrendingUp, Loader } from 'lucide-react';
+import { Search, TrendingUp, Loader, TrendingDown } from 'lucide-react';
 import { useTradeStore } from '@/store/tradeStore';
+import { useMarketStore } from '@/store/marketStore';
 
 export default function StockSelector() {
   const { searchResults, isSearching, searchStocks, fetchStockDetails } =
     useTradeStore();
+  const { gainers, losers, fetchMarketMovers } = useMarketStore();
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    fetchMarketMovers();
+  }, [fetchMarketMovers]);
 
   useEffect(() => {
     const debounceSearch = setTimeout(() => {
@@ -15,14 +21,6 @@ export default function StockSelector() {
     }, 300);
     return () => clearTimeout(debounceSearch);
   }, [query, searchStocks]);
-
-  const popularStocks = [
-    { symbol: 'RELIANCE.NS', name: 'Reliance' },
-    { symbol: 'TCS.NS', name: 'TCS' },
-    { symbol: 'INFY.NS', name: 'Infosys' },
-    { symbol: 'HDFCBANK.NS', name: 'HDFC Bank' },
-    { symbol: 'ITC.NS', name: 'ITC Ltd' },
-  ];
 
   const handleSelect = (symbol: string) => {
     fetchStockDetails(symbol);
@@ -69,19 +67,62 @@ export default function StockSelector() {
       </div>
       <div className='bg-surface rounded-xl border border-border p-6 shadow-sm'>
         <h2 className='text-lg font-semibold text-foreground mb-4 flex items-center gap-2'>
-          <TrendingUp className='w-5 h-5 text-primary' /> Popular Stocks
+          <TrendingUp className='w-5 h-5 text-success' /> Top Gainers
         </h2>
         <div className='space-y-2'>
-          {popularStocks.map((stock) => (
+          {gainers.map((stock) => (
             <button
               key={stock.symbol}
               onClick={() => handleSelect(stock.symbol)}
-              className='w-full bg-background border border-border rounded-lg p-3 hover:border-primary transition-all text-left group'
+              className='w-full bg-background border border-border rounded-lg p-3 hover:border-success transition-all text-left group'
             >
-              <p className='font-bold text-sm text-foreground group-hover:text-primary transition-colors'>
-                {stock.symbol}
-              </p>
-              <p className='text-xs text-muted'>{stock.name}</p>
+              <div className='flex justify-between items-center'>
+                <div>
+                  <p className='font-bold text-sm text-foreground'>
+                    {stock.symbol}
+                  </p>
+                  <p className='text-xs text-muted truncate'>{stock.name}</p>
+                </div>
+                <div className='text-right'>
+                  <p className='font-mono font-semibold text-success'>
+                    +{stock.changePercent.toFixed(2)}%
+                  </p>
+                  <p className='font-mono text-sm text-foreground'>
+                    ₹{stock.price.toLocaleString('en-IN')}
+                  </p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className='bg-surface rounded-xl border border-border p-6 shadow-sm'>
+        <h2 className='text-lg font-semibold text-foreground mb-4 flex items-center gap-2'>
+          <TrendingDown className='w-5 h-5 text-danger' /> Top Losers
+        </h2>
+        <div className='space-y-2'>
+          {losers.map((stock) => (
+            <button
+              key={stock.symbol}
+              onClick={() => handleSelect(stock.symbol)}
+              className='w-full bg-background border border-border rounded-lg p-3 hover:border-danger transition-all text-left group'
+            >
+              <div className='flex justify-between items-center'>
+                <div>
+                  <p className='font-bold text-sm text-foreground'>
+                    {stock.symbol}
+                  </p>
+                  <p className='text-xs text-muted truncate'>{stock.name}</p>
+                </div>
+                <div className='text-right'>
+                  <p className='font-mono font-semibold text-danger'>
+                    {stock.changePercent.toFixed(2)}%
+                  </p>
+                  <p className='font-mono text-sm text-foreground'>
+                    ₹{stock.price.toLocaleString('en-IN')}
+                  </p>
+                </div>
+              </div>
             </button>
           ))}
         </div>

@@ -1,14 +1,30 @@
 'use client';
 
-import { TrendingUp, TrendingDown, BarChart3, Loader } from 'lucide-react';
+import { useEffect } from 'react';
+import { TrendingUp, TrendingDown, Loader } from 'lucide-react';
 import { useTradeStore } from '@/store/tradeStore';
+import { useMarketStore } from '@/store/marketStore';
+import TradingViewChart from './TradingViewChart';
 
 export default function StockDetails() {
-  const { selectedStock, isLoading } = useTradeStore();
+  const { selectedStock, isLoading: isTradeLoading } = useTradeStore();
+  const {
+    chartData,
+    timePeriod,
+    setTimePeriod,
+    fetchChartData,
+    isChartLoading,
+  } = useMarketStore();
 
-  if (isLoading || !selectedStock) {
+  useEffect(() => {
+    if (selectedStock) {
+      fetchChartData(selectedStock.asset, timePeriod);
+    }
+  }, [selectedStock, timePeriod, fetchChartData]);
+
+  if (isTradeLoading || !selectedStock) {
     return (
-      <div className='bg-surface rounded-xl border border-border p-6 shadow-sm h-[500px] flex items-center justify-center'>
+      <div className='bg-surface rounded-xl border border-border p-6 shadow-sm h-[600px] flex items-center justify-center'>
         <Loader className='w-8 h-8 text-primary animate-spin' />
       </div>
     );
@@ -89,18 +105,29 @@ export default function StockDetails() {
           </div>
         ))}
       </div>
-      <div className='bg-background rounded-xl border-2 border-dashed border-border h-80 flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='w-20 h-20 mx-auto mb-4 rounded-2xl bg-surface border border-border flex items-center justify-center'>
-            <BarChart3 className='w-10 h-10 text-muted' />
-          </div>
-          <p className='text-foreground font-semibold text-lg mb-2'>
-            Live Chart
-          </p>
-          <p className='text-sm text-muted'>
-            Real-time price chart will be displayed here
-          </p>
+
+      {isChartLoading ? (
+        <div className='h-96 flex items-center justify-center'>
+          <Loader className='w-8 h-8 text-primary animate-spin' />
         </div>
+      ) : (
+        <TradingViewChart data={chartData} />
+      )}
+
+      <div className='flex gap-2 mt-4'>
+        {['1D', '1W', '1M', '3M', '1Y', 'ALL'].map((period) => (
+          <button
+            key={period}
+            onClick={() => setTimePeriod(period)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              timePeriod === period
+                ? 'bg-primary text-white'
+                : 'bg-background text-muted hover:text-foreground hover:bg-border'
+            }`}
+          >
+            {period}
+          </button>
+        ))}
       </div>
     </div>
   );

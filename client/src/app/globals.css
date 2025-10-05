@@ -23,14 +23,14 @@
 .svg-background {
   min-width: 100%;
   min-height: 100vh;
-  /* Start with at least viewport height */
+
   background-image: url("../assets/Background.svg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center top;
   background-color: #0D1224;
   position: relative;
-  /* Ensure proper positioning context */
+
 }
 
 @keyframes fadeIn {
