@@ -51,3 +51,59 @@ export const getOhlcData = async (req, res, next) => {
         next(err);
     }
 };
+
+export const searchStocks = async (req, res, next) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return next(new ErrorHandler("Search query is required", 400));
+        }
+
+        const results = await yahooFinance.search(query);
+
+        res.status(200).json(results.quotes);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const getQuote = async (req, res, next) => {
+    try {
+        const { symbol } = req.query;
+        if (!symbol) {
+            return next(new ErrorHandler("Stock symbol is required", 400));
+        }
+        const quote = await yahooFinance.quote(symbol);
+        res.status(200).json(quote);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const getMarketStatus = async (req, res, next) => {
+    try {
+        const symbol = "^NSEI";
+        const quote = await yahooFinance.quote(symbol);
+
+        if (!quote || !quote.marketState) {
+            return next(new ErrorHandler("Unable to fetch market status", 500));
+        }
+
+        const marketStatus = quote.marketState;
+        const exchange = quote.fullExchangeName || "NSE";
+        const lastUpdated = quote.regularMarketTime || new Date();
+
+        res.status(200).json({
+            success: true,
+            exchange,
+            marketState: marketStatus, // REGULAR | CLOSED | PRE | POST
+            lastUpdated,
+            message:
+                marketStatus === "REGULAR"
+                    ? "Market is open"
+                    : "Market is closed",
+        });
+    } catch (err) {
+        next(err);
+    }
+};

@@ -1,5 +1,6 @@
 'use client';
 import { useState, ChangeEvent, FormEvent } from 'react';
+import Link from 'next/link';
 import {
   Lock,
   User,
@@ -10,6 +11,9 @@ import {
   BarChart2,
 } from 'lucide-react';
 import { appName } from '../../../lib/constants';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { authService } from '@/lib/api';
 
 interface FormData {
   username: string;
@@ -18,9 +22,6 @@ interface FormData {
   confirmPassword: string;
 }
 
-interface RegisterData
-  extends Pick<FormData, 'username' | 'email' | 'password'> {}
-
 interface ApiError {
   response?: {
     data?: {
@@ -28,38 +29,6 @@ interface ApiError {
     };
   };
 }
-
-const registerUser = (
-  data: RegisterData
-): Promise<{ status: number; data: { message: string } }> => {
-  console.log('Submitting registration data:', data);
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (data.username !== 'user-exists') {
-        resolve({
-          status: 201,
-          data: { message: 'User created successfully!' },
-        });
-      } else {
-        reject({
-          response: { data: { message: 'Username is already taken.' } },
-        });
-      }
-    }, 1500);
-  });
-};
-
-const googleLogin = (): Promise<{
-  status: number;
-  data: { message: string };
-}> => {
-  console.log('Attempting Google Login...');
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ status: 200, data: { message: 'Google login successful!' } });
-    }, 1500);
-  });
-};
 
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -74,6 +43,7 @@ const RegisterPage: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [googleLoading, setGoogleLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const getPasswordStrength = (password: string): number => {
     let strength = 0;
@@ -102,7 +72,6 @@ const RegisterPage: React.FC = () => {
     setGoogleLoading(true);
     setError('');
     try {
-      await googleLogin();
       alert('Google login successful! Redirecting to dashboard...');
       window.location.href = '/dashboard';
     } catch (err) {
@@ -115,33 +84,28 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
+      toast.error('Passwords do not match.');
       return;
     }
     if (passwordStrength < 2) {
-      setError('Password is too weak. Please use a stronger password.');
+      toast.error('Password is too weak. Please use a stronger password.');
       return;
     }
 
     setLoading(true);
 
     try {
-      await registerUser({
+      const response = await authService.register({
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
-      alert('Registration successful! Redirecting to login...');
-      window.location.href = '/login?registered=true';
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(
-        apiError.response?.data?.message ||
-          'Registration failed. Please try again.'
-      );
+      toast.success(response.data.message || 'Registration successful!');
+      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+    } catch (err: any) {
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -154,10 +118,15 @@ const RegisterPage: React.FC = () => {
         <div className='absolute -bottom-1/4 -left-1/4 w-2/3 h-2/3 rounded-full bg-success/10 blur-3xl'></div>
 
         <div className='relative z-10 max-w-lg animate-fade-in'>
-          <div className='mb-8 flex items-center gap-4'>
+          <Link
+            href='/'
+            className='mb-8 flex items-center gap-4'
+            aria-label='Go to homepage'
+          >
             <BarChart2 className='w-12 h-12 text-secondary' />
             <span className='text-2xl font-bold text-white'>{appName}</span>
-          </div>
+          </Link>
+
           <h1 className='text-4xl font-bold mb-6 text-white leading-tight'>
             Navigate the Dalal Street Maze, Risk-Free.
           </h1>

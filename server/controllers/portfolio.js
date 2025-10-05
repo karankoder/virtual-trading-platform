@@ -4,15 +4,15 @@ import { Trade } from "../models/trade.js";
 import { Portfolio } from "../models/portfolio.js";
 import ErrorHandler from "../middlewares/error.js";
 
-const getCurrentPrice = async (asset) => {
+const getStockDetails = async (asset) => {
     const quote = await yahooFinance.quote(asset);
-    if (!quote || !quote.regularMarketPrice) {
-        throw new ErrorHandler(
-            `Could not fetch current price for ${asset}`,
-            404,
-        );
+    if (!quote || !quote.regularMarketPrice || !quote.longName) {
+        throw new ErrorHandler(`Could not fetch details for ${asset}`, 404);
     }
-    return quote.regularMarketPrice;
+    return {
+        price: quote.regularMarketPrice,
+        name: quote.longName,
+    };
 };
 
 export const buyAsset = async (req, res, next) => {
@@ -24,7 +24,7 @@ export const buyAsset = async (req, res, next) => {
             return next(new ErrorHandler("Invalid asset or quantity", 400));
         }
 
-        const price = await getCurrentPrice(asset);
+        const { price, name } = await getStockDetails(asset);
         console.log(price);
         const totalCost = price * quantity;
 
@@ -59,6 +59,7 @@ export const buyAsset = async (req, res, next) => {
         const trade = new Trade({
             user: userId,
             asset,
+            name,
             tradeType: "BUY",
             quantity,
             price,
@@ -89,7 +90,7 @@ export const sellAsset = async (req, res, next) => {
             );
         }
 
-        const price = await getCurrentPrice(asset);
+        const { price, name } = await getStockDetails(asset);
         const totalCredit = price * quantity;
 
         // Update portfolio quantity
@@ -101,6 +102,7 @@ export const sellAsset = async (req, res, next) => {
         const trade = new Trade({
             user: userId,
             asset,
+            name,
             tradeType: "SELL",
             quantity,
             price,
@@ -129,15 +131,36 @@ export const sellAsset = async (req, res, next) => {
 
 export const getPortfolioData = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user.id).select("-password");
-        const portfolio = await Portfolio.find({ user: req.user.id });
-        const trades = await Trade.find({ user: req.user.id }).sort({
+        const user = await User.findById(req.user._id).select("-password");
+        const portfolioFromDB = await Portfolio.find({ user: req.user._id });
+        const trades = await Trade.find({ user: req.user._id }).sort({
             createdAt: -1,
         });
 
+        const symbols = portfolioFromDB.map((item) => item.asset);
+        let enrichedPortfolio = [];
+
+        if (symbols.length > 0) {
+            const quotes = await yahooFinance.quote(symbols);
+            const priceMap = new Map(
+                quotes.map((q) => [
+                    q.symbol,
+                    { price: q.regularMarketPrice, name: q.longName },
+                ]),
+            );
+
+            enrichedPortfolio = portfolioFromDB.map((item) => {
+                const holding = item.toObject();
+                const liveData = priceMap.get(item.asset);
+                holding.currentPrice = liveData ? liveData.price : 0;
+                holding.name = liveData ? liveData.name : "N/A";
+                return holding;
+            });
+        }
+
         res.status(200).json({
             balance: user.balance,
-            portfolio,
+            portfolio: enrichedPortfolio,
             trades,
         });
     } catch (err) {

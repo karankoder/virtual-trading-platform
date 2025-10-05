@@ -1,31 +1,46 @@
-import { ShoppingCart, ShoppingBag, Info, DollarSign } from 'lucide-react';
+'use client';
 
-type OrderPanelProps = {
-  orderType: 'MARKET' | 'LIMIT';
-  setOrderType: (type: 'MARKET' | 'LIMIT') => void;
-  quantity: number;
-  setQuantity: (quantity: number) => void;
-  limitPrice: number;
-  setLimitPrice: (price: number) => void;
-  estimatedTotal: number;
-  selectedStockPrice: number;
-};
+import {
+  ShoppingCart,
+  ShoppingBag,
+  Info,
+  DollarSign,
+  Loader,
+} from 'lucide-react';
+import { useTradeStore } from '@/store/tradeStore';
+import { useMarketStore } from '@/store/marketStore';
 
-export default function OrderPanel({
-  orderType,
-  setOrderType,
-  quantity,
-  setQuantity,
-  limitPrice,
-  setLimitPrice,
-  estimatedTotal,
-  selectedStockPrice,
-}: OrderPanelProps) {
+export default function OrderPanel() {
+  const {
+    selectedStock,
+    orderType,
+    setOrderType,
+    quantity,
+    setQuantity,
+    limitPrice,
+    setLimitPrice,
+    isPlacingOrder,
+    executeTrade,
+  } = useTradeStore();
+  const { status: marketStatus } = useMarketStore();
+
+  if (!selectedStock) {
+    return (
+      <div className='bg-surface rounded-xl border border-border p-6 shadow-sm h-[400px] flex items-center justify-center'>
+        <p className='text-muted'>Select a stock to place an order.</p>
+      </div>
+    );
+  }
+
+  const estimatedTotal =
+    orderType === 'MARKET'
+      ? selectedStock.price * quantity
+      : limitPrice * quantity;
+
   return (
     <div className='bg-surface rounded-xl border border-border p-6 shadow-sm'>
       <h2 className='text-lg font-semibold text-foreground mb-6 flex items-center gap-2'>
-        <ShoppingCart className='w-5 h-5 text-primary' />
-        Place Order
+        <ShoppingCart className='w-5 h-5 text-primary' /> Place Order
       </h2>
       <div className='mb-6'>
         <label className='block text-sm font-semibold text-muted mb-3'>
@@ -65,9 +80,9 @@ export default function OrderPanel({
             {orderType === 'MARKET' ? 'Market Price' : 'Limit Price'}
           </label>
           {orderType === 'MARKET' ? (
-            <div className='bg-background border-2 border-border rounded-xl px-4 py-3'>
+            <div className='bg-background border-2 border-border rounded-xl px-4 py-3 h-[50px] flex items-center'>
               <p className='text-foreground font-bold text-lg'>
-                ₹{selectedStockPrice.toFixed(2)}
+                ₹{selectedStock.price.toFixed(2)}
               </p>
             </div>
           ) : (
@@ -84,8 +99,7 @@ export default function OrderPanel({
       <div className='bg-gradient-to-br from-background to-surface border-2 border-border rounded-xl p-5 mb-6'>
         <div className='flex justify-between items-center mb-2'>
           <span className='text-sm font-semibold text-muted flex items-center gap-2'>
-            <DollarSign className='w-4 h-4' />
-            Estimated Total
+            <DollarSign className='w-4 h-4' /> Estimated Total
           </span>
           <span className='text-2xl font-bold text-foreground'>
             ₹
@@ -100,13 +114,31 @@ export default function OrderPanel({
         </div>
       </div>
       <div className='grid grid-cols-2 gap-4'>
-        <button className='bg-success hover:bg-success/90 text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-success/25 hover:-translate-y-0.5 flex items-center justify-center gap-2 group'>
-          <ShoppingCart className='w-5 h-5 group-hover:scale-110 transition-transform' />
-          Buy
+        <button
+          onClick={() => executeTrade('BUY')}
+          disabled={isPlacingOrder || marketStatus !== 'OPEN'}
+          className='bg-success hover:bg-success/90 text-white font-bold py-4 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 group'
+        >
+          {isPlacingOrder ? (
+            <Loader className='w-5 h-5 animate-spin' />
+          ) : (
+            <>
+              <ShoppingCart className='w-5 h-5' /> Buy
+            </>
+          )}
         </button>
-        <button className='bg-danger hover:bg-danger/90 text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-danger/25 hover:-translate-y-0.5 flex items-center justify-center gap-2 group'>
-          <ShoppingBag className='w-5 h-5 group-hover:scale-110 transition-transform' />
-          Sell
+        <button
+          onClick={() => executeTrade('SELL')}
+          disabled={isPlacingOrder || marketStatus !== 'OPEN'}
+          className='bg-danger hover:bg-danger/90 text-white font-bold py-4 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 group'
+        >
+          {isPlacingOrder ? (
+            <Loader className='w-5 h-5 animate-spin' />
+          ) : (
+            <>
+              <ShoppingBag className='w-5 h-5' /> Sell
+            </>
+          )}
         </button>
       </div>
     </div>

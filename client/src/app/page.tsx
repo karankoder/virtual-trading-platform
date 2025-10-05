@@ -8,10 +8,15 @@ import {
   LineChart,
   TrendingUp,
   PieChart,
+  BarChart2,
 } from 'lucide-react';
 import { appName } from '../lib/constants';
+import Link from 'next/link';
+import { useAuthStore } from '@/store/authStore';
 
 const HomePage: React.FC = () => {
+  const { isAuthenticated } = useAuthStore();
+
   const features = [
     {
       icon: BarChart3,
@@ -55,9 +60,7 @@ const HomePage: React.FC = () => {
         <nav className='container mx-auto px-4 md:px-6'>
           <div className='flex justify-between items-center h-20'>
             <a href='/' className='flex items-center gap-2 group'>
-              <div className='w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center'>
-                <TrendingUp className='w-5 h-5 text-white' />
-              </div>
+              <BarChart2 className='w-10 h-10 text-secondary' />
               <span className='text-lg font-bold text-foreground'>
                 {appName}
               </span>
@@ -74,18 +77,20 @@ const HomePage: React.FC = () => {
               ))}
             </div>
             <div className='flex items-center gap-2 sm:gap-4'>
-              <a
-                href='/login'
-                className='text-muted hover:text-foreground transition-colors text-sm font-medium px-3 py-2'
-              >
-                Log In
-              </a>
-              <a
-                href='/register'
+              {!isAuthenticated ? (
+                <a
+                  href='/login'
+                  className='text-muted hover:text-foreground transition-colors text-sm font-medium px-3 py-2'
+                >
+                  Log In
+                </a>
+              ) : null}
+              <Link
+                href={isAuthenticated ? '/dashboard' : '/register'}
                 className='bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-4 rounded-lg text-sm transition-all flex items-center gap-2'
               >
                 Get Started
-              </a>
+              </Link>
             </div>
           </div>
         </nav>
@@ -125,13 +130,13 @@ const HomePage: React.FC = () => {
                 className='flex flex-col sm:flex-row gap-6 items-center justify-center animate-slide-up'
                 style={{ animationDelay: '0.3s' }}
               >
-                <a
-                  href='/register'
+                <Link
+                  href={isAuthenticated ? '/dashboard' : '/register'}
                   className='group relative px-8 py-4 bg-primary text-white font-bold text-lg rounded-full hover:bg-primary-hover transition-all duration-300 flex items-center gap-3 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-105'
                 >
                   <span>Start Trading Now</span>
                   <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
-                </a>
+                </Link>
               </div>
             </div>
           </section>
@@ -227,13 +232,13 @@ const HomePage: React.FC = () => {
                   Join thousands of traders using {appName} to hone their skills
                   faster, smarter, and more securely than ever before.
                 </p>
-                <a
-                  href='/register'
+                <Link
+                  href={isAuthenticated ? '/dashboard' : '/register'}
                   className='group relative px-8 py-4 bg-primary text-white font-bold text-lg rounded-xl hover:bg-primary-hover transition-all duration-300 flex items-center gap-3 mx-auto shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-105'
                 >
                   <span>Create Your Free Account</span>
                   <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
-                </a>
+                </Link>
               </div>
             </div>
           </section>

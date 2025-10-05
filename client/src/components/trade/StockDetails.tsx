@@ -1,27 +1,32 @@
-import { TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
+'use client';
 
-type SelectedStock = {
-  symbol: string;
-  name: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  high: number;
-  low: number;
-  open: number;
-  prevClose: number;
-};
+import { TrendingUp, TrendingDown, BarChart3, Loader } from 'lucide-react';
+import { useTradeStore } from '@/store/tradeStore';
 
-type StockDetailsProps = {
-  stock: SelectedStock;
-};
+export default function StockDetails() {
+  const { selectedStock, isLoading } = useTradeStore();
 
-export default function StockDetails({ stock }: StockDetailsProps) {
+  if (isLoading || !selectedStock) {
+    return (
+      <div className='bg-surface rounded-xl border border-border p-6 shadow-sm h-[500px] flex items-center justify-center'>
+        <Loader className='w-8 h-8 text-primary animate-spin' />
+      </div>
+    );
+  }
+
   const stockStats = [
-    { label: 'Open', value: `₹${stock.open.toFixed(2)}` },
-    { label: 'High', value: `₹${stock.high.toFixed(2)}`, color: 'success' },
-    { label: 'Low', value: `₹${stock.low.toFixed(2)}`, color: 'danger' },
-    { label: 'Prev Close', value: `₹${stock.prevClose.toFixed(2)}` },
+    { label: 'Open', value: `₹${selectedStock.open.toFixed(2)}` },
+    {
+      label: 'High',
+      value: `₹${selectedStock.high.toFixed(2)}`,
+      color: 'success',
+    },
+    {
+      label: 'Low',
+      value: `₹${selectedStock.low.toFixed(2)}`,
+      color: 'danger',
+    },
+    { label: 'Prev Close', value: `₹${selectedStock.prevClose.toFixed(2)}` },
   ];
 
   return (
@@ -29,31 +34,36 @@ export default function StockDetails({ stock }: StockDetailsProps) {
       <div className='flex items-start justify-between mb-6'>
         <div>
           <h2 className='text-2xl font-bold text-foreground mb-1'>
-            {stock.name}
+            {selectedStock.name}
           </h2>
-          <p className='text-sm text-muted font-medium'>{stock.symbol} • NSE</p>
+          <p className='text-sm text-muted font-medium'>
+            {selectedStock.asset} • NSE
+          </p>
         </div>
         <div className='text-right'>
           <p
             className={`text-3xl font-bold mb-1 ${
-              stock.changePercent >= 0 ? 'text-success' : 'text-danger'
+              selectedStock.changePercent >= 0 ? 'text-success' : 'text-danger'
             }`}
           >
-            ₹{stock.price.toLocaleString('en-IN')}
+            ₹{selectedStock.price.toLocaleString('en-IN')}
           </p>
           <div className='flex items-center justify-end gap-1.5'>
-            {stock.changePercent >= 0 ? (
+            {selectedStock.changePercent >= 0 ? (
               <TrendingUp className='w-4 h-4 text-success' />
             ) : (
               <TrendingDown className='w-4 h-4 text-danger' />
             )}
             <p
               className={`text-sm font-semibold ${
-                stock.changePercent >= 0 ? 'text-success' : 'text-danger'
+                selectedStock.changePercent >= 0
+                  ? 'text-success'
+                  : 'text-danger'
               }`}
             >
-              {stock.changePercent >= 0 ? '+' : ''}
-              {stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
+              {selectedStock.changePercent >= 0 ? '+' : ''}
+              {selectedStock.change.toFixed(2)} (
+              {selectedStock.changePercent.toFixed(2)}%)
             </p>
           </div>
         </div>

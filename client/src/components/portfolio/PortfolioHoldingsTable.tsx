@@ -1,15 +1,11 @@
 import { ArrowUpRight, ArrowDownRight, Eye } from 'lucide-react';
 
 type Holding = {
-  symbol: string;
+  asset: string;
   name: string;
   quantity: number;
-  avgPrice: number;
+  averageBuyPrice: number;
   currentPrice: number;
-  invested: number;
-  currentValue: number;
-  pl: number;
-  plPercent: number;
 };
 
 type PortfolioHoldingsTableProps = {
@@ -57,76 +53,83 @@ export default function PortfolioHoldingsTable({
             </tr>
           </thead>
           <tbody className='divide-y divide-border'>
-            {holdings.map((holding) => (
-              <tr
-                key={holding.symbol}
-                className='hover:bg-background transition-colors'
-              >
-                <td className='px-6 py-4'>
-                  <div>
-                    <p className='font-bold text-foreground'>
-                      {holding.symbol}
-                    </p>
-                    <p className='text-sm text-muted'>{holding.name}</p>
-                  </div>
-                </td>
-                <td className='px-6 py-4 text-right'>
-                  <span className='font-semibold text-foreground'>
-                    {holding.quantity}
-                  </span>
-                </td>
-                <td className='px-6 py-4 text-right'>
-                  <span className='font-semibold text-foreground'>
-                    ₹{holding.avgPrice.toFixed(2)}
-                  </span>
-                </td>
-                <td className='px-6 py-4 text-right'>
-                  <span className='font-semibold text-foreground'>
-                    ₹{holding.currentPrice.toFixed(2)}
-                  </span>
-                </td>
-                <td className='px-6 py-4 text-right'>
-                  <span className='font-semibold text-foreground'>
-                    ₹{holding.invested.toLocaleString('en-IN')}
-                  </span>
-                </td>
-                <td className='px-6 py-4 text-right'>
-                  <span className='font-semibold text-foreground'>
-                    ₹{holding.currentValue.toLocaleString('en-IN')}
-                  </span>
-                </td>
-                <td className='px-6 py-4 text-right'>
-                  <div className='inline-flex flex-col items-end'>
-                    <span
-                      className={`font-bold flex items-center gap-1 ${
-                        holding.pl >= 0 ? 'text-success' : 'text-danger'
-                      }`}
-                    >
-                      {holding.pl >= 0 ? (
-                        <ArrowUpRight className='w-3.5 h-3.5' />
-                      ) : (
-                        <ArrowDownRight className='w-3.5 h-3.5' />
-                      )}
-                      {holding.pl >= 0 ? '+' : ''}₹
-                      {Math.abs(holding.pl).toLocaleString('en-IN')}
+            {holdings.map((holding) => {
+              const invested = holding.averageBuyPrice * holding.quantity;
+              const currentValue = holding.currentPrice * holding.quantity;
+              const pl = currentValue - invested;
+              const plPercent = invested > 0 ? (pl / invested) * 100 : 0;
+
+              return (
+                <tr
+                  key={holding.asset}
+                  className='hover:bg-background transition-colors'
+                >
+                  <td className='px-6 py-4'>
+                    <div>
+                      <p className='font-bold text-foreground'>
+                        {holding.asset}
+                      </p>
+                      <p className='text-sm text-muted'>{holding.name}</p>
+                    </div>
+                  </td>
+                  <td className='px-6 py-4 text-right'>
+                    <span className='font-semibold text-foreground'>
+                      {holding.quantity}
                     </span>
-                    <span
-                      className={`text-xs font-semibold ${
-                        holding.pl >= 0 ? 'text-success' : 'text-danger'
-                      }`}
-                    >
-                      ({holding.plPercent >= 0 ? '+' : ''}
-                      {holding.plPercent.toFixed(2)}%)
+                  </td>
+                  <td className='px-6 py-4 text-right'>
+                    <span className='font-semibold text-foreground'>
+                      ₹{holding.averageBuyPrice.toFixed(2)}
                     </span>
-                  </div>
-                </td>
-                <td className='px-6 py-4 text-right'>
-                  <button className='inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold text-sm transition-all hover:shadow-md'>
-                    <Eye className='w-4 h-4' /> View
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className='px-6 py-4 text-right'>
+                    <span className='font-semibold text-foreground'>
+                      ₹{holding.currentPrice.toFixed(2)}
+                    </span>
+                  </td>
+                  <td className='px-6 py-4 text-right'>
+                    <span className='font-semibold text-foreground'>
+                      ₹{invested.toLocaleString('en-IN')}
+                    </span>
+                  </td>
+                  <td className='px-6 py-4 text-right'>
+                    <span className='font-semibold text-foreground'>
+                      ₹{currentValue.toLocaleString('en-IN')}
+                    </span>
+                  </td>
+                  <td className='px-6 py-4 text-right'>
+                    <div className='inline-flex flex-col items-end'>
+                      <span
+                        className={`font-bold flex items-center gap-1 ${
+                          pl >= 0 ? 'text-success' : 'text-danger'
+                        }`}
+                      >
+                        {pl >= 0 ? (
+                          <ArrowUpRight className='w-3.5 h-3.5' />
+                        ) : (
+                          <ArrowDownRight className='w-3.5 h-3.5' />
+                        )}
+                        {pl >= 0 ? '+' : ''}₹
+                        {Math.abs(pl).toLocaleString('en-IN')}
+                      </span>
+                      <span
+                        className={`text-xs font-semibold ${
+                          pl >= 0 ? 'text-success' : 'text-danger'
+                        }`}
+                      >
+                        ({plPercent >= 0 ? '+' : ''}
+                        {plPercent.toFixed(2)}%)
+                      </span>
+                    </div>
+                  </td>
+                  <td className='px-6 py-4 text-right'>
+                    <button className='inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold text-sm transition-all hover:shadow-md'>
+                      <Eye className='w-4 h-4' /> View
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

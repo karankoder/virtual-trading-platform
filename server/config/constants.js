@@ -23,56 +23,61 @@ export const mailContent = (
     verification_link,
     expiry_hours,
 ) => `<html lang="en">
-        <body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4;">
-          <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-collapse: collapse;">
-            <tr>
-              <td align="center" style="padding: 40px 0 30px 0; background-color: #2a6cdf; color: #ffffff;">
-                <h1 style="margin: 0; font-size: 32px; font-weight: bold;">Taskify</h1>
-                <p style="margin: 5px 0 0 0; font-size: 16px;">Your Personal Task Manager</p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 40px 30px;">
-                <h2 style="font-size: 24px; margin: 0 0 20px 0; color: #333333;">Just one more step...</h2>
-                <p style="font-size: 16px; line-height: 1.5; margin: 0 0 25px 0; color: #555555;">
-                  Hi ${username},<br><br>
-                  Welcome to Taskify! To complete your registration and start organizing your tasks, please click the button below to verify your email address.
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    </style>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Inter', Helvetica, Arial, sans-serif; background-color: #0a101f;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #1e293b; border-collapse: collapse; border-radius: 8px; overflow: hidden;">
+        <tr>
+            <td align="center" style="padding: 40px 0 30px 0; background-color: #0a101f; color: #e2e8f0; border-bottom: 1px solid #334155;">
+                <h1 style="margin: 0; font-size: 32px; font-weight: bold;">AlgoArena</h1>
+                <p style="margin: 5px 0 0 0; font-size: 16px; color: #94a3b8;">Virtual Trading Platform</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 40px 30px;">
+                <h2 style="font-size: 24px; margin: 0 0 20px 0; color: #e2e8f0; font-weight: bold;">Welcome to the Trading Floor!</h2>
+                <p style="font-size: 16px; line-height: 1.6; margin: 0 0 25px 0; color: #94a3b8;">
+                    Hi ${username},<br><br>
+                    Welcome to AlgoArena! To complete your registration and unlock your ₹1 Crore virtual portfolio, please click the button below to verify your email address.
                 </p>
                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                  <tr>
-                    <td align="center">
-                      <table border="0" cellpadding="0" cellspacing="0">
-                        <tr>
-                          <td align="center" bgcolor="#2a6cdf" style="border-radius: 5px;">
-                            <a href="${verification_link}" target="_blank" style="font-size: 18px; font-weight: bold; color: #ffffff; text-decoration: none; padding: 15px 35px; border-radius: 5px; display: inline-block;">Verify Email Address</a>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
+                    <tr>
+                        <td align="center">
+                            <table border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" bgcolor="#ea580c" style="border-radius: 8px;">
+                                        <a href="${verification_link}" target="_blank" style="font-size: 18px; font-weight: bold; color: #ffffff; text-decoration: none; padding: 15px 35px; border-radius: 8px; display: inline-block;">Verify Your Account</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
                 </table>
-                <p style="font-size: 16px; line-height: 1.5; margin: 25px 0; color: #555555;">
-                  This verification link will expire in ${expiry_hours} hours. If you're having trouble with the button, you can also copy and paste the following link into your browser:
+                <p style="font-size: 16px; line-height: 1.6; margin: 25px 0; color: #94a3b8;">
+                    This verification link will expire in ${expiry_hours} hours. If you're having trouble, copy and paste the following link into your browser:
                 </p>
                 <p style="font-size: 14px; line-height: 1.5; word-break: break-all; margin: 0 0 25px 0;">
-                  <a href="${verification_link}" target="_blank" style="color: #2a6cdf;">${verification_link}</a>
+                    <a href="${verification_link}" target="_blank" style="color: #f97316;">${verification_link}</a>
                 </p>
-                <p style="font-size: 16px; line-height: 1.5; margin: 0; color: #555555;">
-                  Thanks,<br>
-                  The Taskify Team
+                <p style="font-size: 16px; line-height: 1.6; margin: 0; color: #94a3b8;">
+                    Happy Trading,<br>
+                    The AlgoArena Team
                 </p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 30px; background-color: #f4f4f4; text-align: center;">
-                <p style="margin: 0; font-size: 12px; color: #888888;">
-                  If you did not sign up for a Taskify account, you can safely ignore this email.
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 30px; background-color: #0a101f; text-align: center;">
+                <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+                    If you did not sign up for a AlgoArena account, you can safely ignore this email.
                 </p>
-                <p style="margin: 10px 0 0 0; font-size: 12px; color: #888888;">
-                  &copy; 2025 Taskify. All rights reserved.
+                <p style="margin: 10px 0 0 0; font-size: 12px; color: #94a3b8;">
+                    &copy; ${new Date().getFullYear()} AlgoArena. All rights reserved.
                 </p>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>`;
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;

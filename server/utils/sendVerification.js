@@ -7,18 +7,18 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendVerification = async (to, username, password, res) => {
     try {
-        const from = `Taskify <${process.env.SMTP_EMAIL_ID}>`;
+        const from = `AlgoArena <${process.env.SMTP_EMAIL_ID}>`;
         const token = crypto.randomBytes(32).toString("hex");
         const expiry_hours = 1;
 
-        const verification_link = `${frontendUrl}/auth/verify-email?email=${encodeURIComponent(
+        const verification_link = `${frontendUrl}/verify-email?email=${encodeURIComponent(
             to,
         )}&token=${token}`;
 
         const msg = {
             to,
             from,
-            subject: "Verify Your Email for Taskify",
+            subject: "Verify Your Email for AlgoArena",
             html: mailContent(username, verification_link, expiry_hours),
         };
 

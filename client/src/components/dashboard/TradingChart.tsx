@@ -1,38 +1,64 @@
-export default function TradingChart() {
+'use client';
+import { BarChart3 } from 'lucide-react';
+
+export default function TradingChart({
+  selectedStock,
+}: {
+  selectedStock: any;
+}) {
+  if (!selectedStock) {
+    return (
+      <div className='bg-surface rounded-xl border border-border p-6 h-[400px] flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='w-20 h-20 mx-auto mb-6 rounded-2xl bg-background border border-border flex items-center justify-center'>
+            <BarChart3 className='w-10 h-10 text-muted' />
+          </div>
+          <h3 className='text-xl font-bold text-foreground mb-2'>
+            Select a Stock to View Chart
+          </h3>
+          <p className='text-muted max-w-xs mx-auto'>
+            Click on a stock from your holdings list or use the search bar to
+            see its live chart and trading data.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  const change = selectedStock.currentPrice - selectedStock.averageBuyPrice;
+  const changePercent = (change / selectedStock.averageBuyPrice) * 100;
+
   return (
     <div className='bg-surface rounded-xl border border-border p-6'>
       <div className='flex items-center justify-between mb-4'>
         <div>
           <h2 className='text-2xl font-bold text-foreground'>
-            Reliance Industries Ltd.
+            {selectedStock.name}
           </h2>
-          <p className='text-sm text-muted'>RELIANCE.NS</p>
+          <p className='text-sm text-muted'>{selectedStock.asset}</p>
         </div>
         <div className='text-right'>
-          <p className='text-2xl font-bold text-success'>₹2,845.50</p>
-          <p className='text-sm text-success'>+42.50 (+1.52%)</p>
+          <p
+            className={`text-2xl font-bold ${
+              change >= 0 ? 'text-success' : 'text-danger'
+            }`}
+          >
+            ₹{selectedStock.currentPrice.toLocaleString('en-IN')}
+          </p>
+          <p
+            className={`text-sm ${
+              change >= 0 ? 'text-success' : 'text-danger'
+            }`}
+          >
+            {change >= 0 ? '+' : ''}
+            {change.toFixed(2)} ({changePercent.toFixed(2)}%)
+          </p>
         </div>
       </div>
       <div className='bg-background rounded-lg border border-border h-96 flex items-center justify-center'>
         <div className='text-center'>
-          <svg
-            className='w-16 h-16 mx-auto mb-4 text-muted'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
-            />
-          </svg>
+          <BarChart3 className='w-16 h-16 mx-auto mb-4 text-muted' />
           <p className='text-muted font-medium'>
             Chart will be integrated here
-          </p>
-          <p className='text-sm text-muted mt-2'>
-            TradingView Lightweight Charts
           </p>
         </div>
       </div>

@@ -1,62 +1,29 @@
 'use client';
 
 import { useState, ChangeEvent, FormEvent } from 'react';
-import { Lock, User, Eye, EyeOff, BarChart2 } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, BarChart2, Mail } from 'lucide-react';
 import { appName } from '../../../lib/constants';
+import { authService } from '@/lib/api';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/authStore';
 
 type FormData = {
-  username: string;
+  email: string;
   password: string;
-};
-
-type LoginData = FormData;
-
-type ApiError = {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-};
-
-const loginUser = (
-  data: LoginData
-): Promise<{ status: number; data: { message: string } }> => {
-  console.log('Submitting login data:', data);
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (data.username === 'testuser' && data.password === 'password123') {
-        resolve({ status: 200, data: { message: 'Login successful!' } });
-      } else {
-        reject({
-          response: { data: { message: 'Invalid username or password.' } },
-        });
-      }
-    }, 1500);
-  });
-};
-
-const googleLogin = (): Promise<{
-  status: number;
-  data: { message: string };
-}> => {
-  console.log('Attempting Google Login...');
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ status: 200, data: { message: 'Google login successful!' } });
-    }, 1500);
-  });
 };
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    username: '',
+    email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [googleLoading, setGoogleLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const { checkAuthStatus } = useAuthStore();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,11 +33,10 @@ const LoginPage: React.FC = () => {
     setGoogleLoading(true);
     setError('');
     try {
-      await googleLogin();
       alert('Google login successful! Redirecting to dashboard...');
       window.location.href = '/dashboard';
     } catch (err) {
-      const apiError = err as ApiError;
+      const apiError = err as any;
       setError(apiError.response?.data?.message || 'Google login failed.');
     } finally {
       setGoogleLoading(false);
@@ -79,17 +45,16 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
-      await loginUser(formData);
-      alert('Login successful! Redirecting to dashboard...');
-      window.location.href = '/dashboard';
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(
-        apiError.response?.data?.message || 'Login failed. Please try again.'
+      const response = await authService.login(formData);
+      toast.success(response.data.message || 'Login successful!');
+      await checkAuthStatus();
+      router.push('/dashboard');
+    } catch (err: any) {
+      toast.error(
+        err.message || 'Login failed. Please check your credentials.'
       );
     } finally {
       setLoading(false);
@@ -163,7 +128,7 @@ const LoginPage: React.FC = () => {
               </div>
               <div className='relative flex justify-center text-sm'>
                 <span className='px-4 bg-background text-muted'>
-                  Or sign in with username
+                  Or sign in with email
                 </span>
               </div>
             </div>
@@ -171,19 +136,19 @@ const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit} className='space-y-5'>
               <div>
                 <label className='font-medium text-muted text-sm mb-1 block'>
-                  Username
+                  Email
                 </label>
                 <div className='relative'>
                   <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                    <User className='h-5 w-5 text-muted' />
+                    <Mail className='h-5 w-5 text-muted' />
                   </div>
                   <input
                     type='text'
-                    name='username'
-                    value={formData.username}
+                    name='email'
+                    value={formData.email}
                     onChange={handleChange}
                     className='w-full bg-surface border border-border rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-muted focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition'
-                    placeholder='Your username'
+                    placeholder='johndoe@example.com'
                     required
                   />
                 </div>

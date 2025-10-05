@@ -11,6 +11,10 @@ const TradeSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        name: {
+            type: String,
+            required: true,
+        },
         tradeType: {
             type: String,
             enum: ["BUY", "SELL"],

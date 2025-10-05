@@ -20,7 +20,6 @@ export default function HistoryStats({
         <p className='text-sm text-muted mb-2 font-medium'>Total Trades</p>
         <p className='text-2xl font-bold text-foreground'>{totalTrades}</p>
       </div>
-
       <div className='bg-surface rounded-xl border border-border p-6 shadow-sm'>
         <div className='w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-4'>
           <TrendingUp className='w-6 h-6 text-success' />
@@ -30,7 +29,6 @@ export default function HistoryStats({
           ₹{totalBuyVolume.toLocaleString('en-IN')}
         </p>
       </div>
-
       <div className='bg-surface rounded-xl border border-border p-6 shadow-sm'>
         <div className='w-12 h-12 rounded-xl bg-danger/10 flex items-center justify-center mb-4'>
           <TrendingDown className='w-6 h-6 text-danger' />

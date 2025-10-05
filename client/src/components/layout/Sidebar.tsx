@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -12,14 +13,17 @@ import {
   Sparkles,
   ArrowUpRight,
   ArrowDownRight,
-  DollarSign,
+  User,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { appName } from '@/lib/constants';
+import { toast } from 'sonner';
+import { useAuthStore } from '@/store/authStore';
 
 interface SidebarProps {
   user: {
-    name: string;
+    id: string;
+    username: string;
     email: string;
   };
   portfolio: {
@@ -33,6 +37,7 @@ interface SidebarProps {
 const Sidebar = ({ user, portfolio }: SidebarProps) => {
   const pathname = usePathname();
   const { isCollapsed, toggleSidebar } = useSidebar();
+  const { logout } = useAuthStore();
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -49,13 +54,9 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
     }).format(amount);
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const handleLogout = async () => {
+    toast.info('Logging you out...');
+    await logout();
   };
 
   return (
@@ -67,7 +68,11 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
       <div className='p-6 border-b border-border'>
         <div className='flex items-center justify-between'>
           {!isCollapsed && (
-            <div className='flex items-center gap-3'>
+            <Link
+              href='/'
+              className='flex items-center gap-3 group'
+              aria-label='Go to homepage'
+            >
               <div className='relative'>
                 <div className='w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20'>
                   <TrendingUp
@@ -78,14 +83,14 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
                 <div className='absolute -top-1 -right-1 w-3 h-3 bg-success rounded-full border-2 border-surface animate-pulse'></div>
               </div>
               <div>
-                <h1 className='text-xl font-bold text-foreground tracking-tight'>
+                <h1 className='text-xl font-bold text-foreground tracking-tight cursor-pointer'>
                   {appName}
                 </h1>
                 <p className='text-[10px] text-muted uppercase tracking-wider font-medium'>
                   Trading Terminal
                 </p>
               </div>
-            </div>
+            </Link>
           )}
           <button
             onClick={toggleSidebar}
@@ -109,16 +114,14 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
         >
           <div className='relative'>
             <div className='w-11 h-11 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 shadow-md'>
-              <span className='text-white font-bold text-sm'>
-                {getInitials(user.name)}
-              </span>
+              <User className='w-6 h-6 text-white' strokeWidth={2.5} />
             </div>
             <div className='absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-success rounded-full border-2 border-surface'></div>
           </div>
           {!isCollapsed && (
             <div className='flex-1 min-w-0'>
               <p className='text-sm font-semibold text-foreground truncate'>
-                {user.name}
+                {user.username}
               </p>
               <p className='text-xs text-muted truncate'>{user.email}</p>
             </div>
@@ -208,6 +211,7 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
 
       <div className='p-4 border-t border-border'>
         <button
+          onClick={handleLogout}
           className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-muted hover:bg-danger/10 hover:text-danger group ${
             isCollapsed ? 'justify-center' : ''
           }`}

@@ -1,44 +1,50 @@
-import axios from 'axios';
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import axios, { AxiosError } from 'axios';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+type ApiErrorResponse = {
+  error?: string;
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    const apiError = error as AxiosError<ApiErrorResponse>;
+    if (
+      apiError.response &&
+      apiError.response.data &&
+      apiError.response.data.error
+    ) {
+      return Promise.reject(new Error(apiError.response.data.error));
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-// Auth API
-export const authAPI = {
-  login: (credentials) => api.post('/auth/login', credentials),
-  register: (userData) => api.post('/auth/register', userData),
-  logout: () => api.post('/auth/logout'),
-  getProfile: () => api.get('/auth/profile'),
+export const authService = {
+  register: (userData: any) => api.post('/users/new', userData),
+  login: (credentials: any) => api.post('/users/login', credentials),
+  verifyEmail: (email: string, token: string) =>
+    api.get(`/users/verify/${email}/${token}`),
+  getMe: () => api.get('/users/me'),
+  logout: () => api.get('/users/logout'),
 };
 
-// Trading API
-export const tradingAPI = {
-  searchStock: (query) => api.get(`/stocks/search?q=${query}`),
-  getStockData: (symbol) => api.get(`/stocks/${symbol}`),
-  placeOrder: (orderData) => api.post('/orders', orderData),
-  getOrders: () => api.get('/orders'),
+export const portfolioService = {
+  getData: () => api.get('/portfolio'),
+  buy: (tradeData: any) => api.post('/portfolio/buy', tradeData),
+  sell: (tradeData: any) => api.post('/portfolio/sell', tradeData),
 };
 
-// Portfolio API
-export const portfolioAPI = {
-  getPortfolio: () => api.get('/portfolio'),
-  getBalance: () => api.get('/portfolio/balance'),
+export const marketService = {
+  getOhlc: (asset: string) => api.get(`/market/ohlc?asset=${asset}`),
+  search: (query: string) => api.get(`/market/search?query=${query}`),
+  getQuote: (symbol: string) => api.get(`/market/quote?symbol=${symbol}`),
+  getStatus: () => api.get('/market/status'),
 };
-
-export default api;

@@ -7,16 +7,13 @@ import {
 } from 'lucide-react';
 
 type Trade = {
-  id: string;
-  type: 'BUY' | 'SELL';
-  symbol: string;
+  _id: string;
+  tradeType: 'BUY' | 'SELL';
+  asset: string;
   name: string;
   quantity: number;
   price: number;
-  total: number;
-  date: string;
-  time: string;
-  status: 'COMPLETED' | 'PENDING' | 'FAILED';
+  createdAt: string;
 };
 
 type HistoryTableProps = {
@@ -79,35 +76,33 @@ export default function HistoryTable({ trades }: HistoryTableProps) {
             ) : (
               trades.map((trade) => (
                 <tr
-                  key={trade.id}
+                  key={trade._id}
                   className='hover:bg-background transition-colors'
                 >
                   <td className='px-6 py-4'>
                     <span className='font-mono text-sm font-semibold text-muted'>
-                      {trade.id}
+                      {trade._id.slice(-6).toUpperCase()}
                     </span>
                   </td>
                   <td className='px-6 py-4'>
                     <span
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold ${
-                        trade.type === 'BUY'
+                        trade.tradeType === 'BUY'
                           ? 'bg-success/20 text-success'
                           : 'bg-danger/20 text-danger'
                       }`}
                     >
-                      {trade.type === 'BUY' ? (
+                      {trade.tradeType === 'BUY' ? (
                         <ShoppingCart className='w-3.5 h-3.5' />
                       ) : (
                         <ShoppingBag className='w-3.5 h-3.5' />
                       )}
-                      {trade.type}
+                      {trade.tradeType}
                     </span>
                   </td>
                   <td className='px-6 py-4'>
                     <div>
-                      <p className='font-bold text-foreground'>
-                        {trade.symbol}
-                      </p>
+                      <p className='font-bold text-foreground'>{trade.asset}</p>
                       <p className='text-sm text-muted'>{trade.name}</p>
                     </div>
                   </td>
@@ -123,21 +118,29 @@ export default function HistoryTable({ trades }: HistoryTableProps) {
                   </td>
                   <td className='px-6 py-4 text-right'>
                     <span className='font-bold text-foreground'>
-                      ₹{trade.total.toLocaleString('en-IN')}
+                      ₹{(trade.price * trade.quantity).toLocaleString('en-IN')}
                     </span>
                   </td>
                   <td className='px-6 py-4'>
                     <div className='flex items-center gap-2 text-sm text-muted'>
                       <Calendar className='w-4 h-4' />
                       <div>
-                        <p className='font-semibold'>{trade.date}</p>
-                        <p className='text-xs'>{trade.time}</p>
+                        <p className='font-semibold'>
+                          {new Date(trade.createdAt).toLocaleDateString(
+                            'en-IN'
+                          )}
+                        </p>
+                        <p className='text-xs'>
+                          {new Date(trade.createdAt).toLocaleTimeString(
+                            'en-IN'
+                          )}
+                        </p>
                       </div>
                     </div>
                   </td>
                   <td className='px-6 py-4 text-center'>
                     <span className='inline-block px-3 py-1 rounded-full text-xs font-bold bg-success/20 text-success'>
-                      {trade.status}
+                      COMPLETED
                     </span>
                   </td>
                 </tr>
