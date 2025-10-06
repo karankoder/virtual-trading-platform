@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   User,
+  BarChart2,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { appName } from '@/lib/constants';
@@ -75,10 +76,7 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
             >
               <div className='relative'>
                 <div className='w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20'>
-                  <TrendingUp
-                    className='w-6 h-6 text-white'
-                    strokeWidth={2.5}
-                  />
+                  <BarChart2 className='w-6 h-6 text-white' strokeWidth={2.5} />
                 </div>
                 <div className='absolute -top-1 -right-1 w-3 h-3 bg-success rounded-full border-2 border-surface animate-pulse'></div>
               </div>
@@ -183,7 +181,7 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
           const Icon = item.icon;
 
           return (
-            <a
+            <Link
               key={item.path}
               href={item.path}
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group relative ${
@@ -204,7 +202,7 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
               {!isCollapsed && (
                 <span className='font-semibold text-sm'>{item.name}</span>
               )}
-            </a>
+            </Link>
           );
         })}
       </nav>

@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuthStore } from '@/store/authStore';
@@ -33,6 +33,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
     startPolling: startMarketPolling,
     stopPolling: stopMarketPolling,
   } = useMarketStore();
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEffect(() => {
     if (!isInitializing && !isAuthenticated) {
@@ -61,6 +62,12 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       }
     };
   }, [isAuthenticated, isInitializing, fetchPortfolio, selectedStock]);
+
+  useEffect(() => {
+    if (!isPortfolioLoading) {
+      setHasLoadedOnce(true);
+    }
+  }, [isPortfolioLoading]);
 
   const totalInvested = holdings.reduce(
     (sum, h) => sum + h.averageBuyPrice * h.quantity,
@@ -100,7 +107,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
         }`}
       >
         <div className='p-8 max-w-[1800px] mx-auto'>
-          {isPortfolioLoading ? (
+          {!hasLoadedOnce ? (
             <div className='flex items-center justify-center h-[calc(100vh-10rem)]'>
               <div className='text-center'>
                 <Loader className='w-10 h-10 text-primary animate-spin mx-auto mb-4' />

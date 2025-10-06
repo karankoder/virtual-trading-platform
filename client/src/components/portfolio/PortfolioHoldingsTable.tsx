@@ -109,7 +109,7 @@ export default function PortfolioHoldingsTable({
                         ) : (
                           <ArrowDownRight className='w-3.5 h-3.5' />
                         )}
-                        {pl >= 0 ? '+' : ''}₹
+                        {pl >= 0 ? '' : ''}₹
                         {Math.abs(pl).toLocaleString('en-IN')}
                       </span>
                       <span

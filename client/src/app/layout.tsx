@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: ` ${appName} - Virtual Trading Platform`,
   description:
     'Practice stock trading on the Indian market with a ₹1 Crore virtual portfolio. No risk, all reward.',
+  icons: {
+    icon: '/logo.svg',
+  },
 };
 
 export default function RootLayout({

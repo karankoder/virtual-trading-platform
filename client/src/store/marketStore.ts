@@ -67,7 +67,8 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   startPolling: () => {
     const intervalId = setInterval(() => {
       get().fetchMarketStatus();
-    }, 60000);
+      get().fetchMarketMovers();
+    }, 10000);
     return intervalId;
   },
   stopPolling: (intervalId) => {
