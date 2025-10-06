@@ -15,7 +15,6 @@ const schema = new mongoose.Schema(
         password: {
             required: false,
             type: String,
-            select: false,
         },
         balance: { type: Number, default: 10000000 },
     },

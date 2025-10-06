@@ -11,21 +11,9 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { usePortfolioStore } from '@/store/portfolioStore';
-import { Loader } from 'lucide-react';
 
 export default function PortfolioPage() {
   const { holdings, balance, isLoading } = usePortfolioStore();
-
-  // if (isLoading) {
-  //   return (
-  //     <div className='flex items-center justify-center h-[calc(100vh-200px)]'>
-  //       <div className='text-center'>
-  //         <Loader className='w-10 h-10 text-primary animate-spin mx-auto mb-4' />
-  //         <p className='text-muted'>Loading Portfolio...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   const totalInvested = holdings.reduce(
     (sum, h) => sum + h.averageBuyPrice * h.quantity,

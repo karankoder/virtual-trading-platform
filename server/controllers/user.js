@@ -29,7 +29,7 @@ export const createGoogleUser = async (
 
     if (!user) {
         user = await User.create({
-            name: profile.displayName,
+            username: profile.displayName,
             email: profile.emails[0].value,
             password: null,
         });

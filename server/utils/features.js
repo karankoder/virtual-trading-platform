@@ -37,11 +37,13 @@ export const saveGoogleCookie = async (user, res, next, statusCode) => {
             secure: process.env.NODE_ENV === "development" ? false : true,
         });
 
-        if (findUser.password === null) {
-            res.redirect(`${frontendUrl}/setPassword`);
-        } else {
-            res.redirect(`${frontendUrl}/main`);
-        }
+        res.redirect(`${frontendUrl}/dashboard`);
+
+        // if (findUser.password === null) {
+        //     res.redirect(`${frontendUrl}/setPassword`);
+        // } else {
+        //     res.redirect(`${frontendUrl}/main`);
+        // }
     } catch (error) {
         next(error);
     }

@@ -1,11 +1,3 @@
-import {
-  TrendingUp,
-  TrendingDown,
-  Wallet,
-  PieChart,
-  DollarSign,
-} from 'lucide-react';
-
 type PortfolioStatsProps = {
   stats: {
     label: string;

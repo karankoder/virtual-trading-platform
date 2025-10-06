@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import axios from 'axios';
+import { authService } from '@/lib/api';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -30,7 +31,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   checkAuthStatus: async () => {
     try {
-      const response = await api.get('/users/me');
+      const response = await authService.getMe();
       if (response.data && response.data.user) {
         set({ user: response.data.user, isAuthenticated: true });
       } else {
@@ -44,7 +45,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   logout: async () => {
     try {
-      await api.get('/users/logout');
+      await authService.logout();
     } finally {
       set({ user: null, isAuthenticated: false });
     }

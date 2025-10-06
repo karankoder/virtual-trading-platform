@@ -69,17 +69,7 @@ const RegisterPage: React.FC = () => {
   };
 
   const handleGoogleClick = async () => {
-    setGoogleLoading(true);
-    setError('');
-    try {
-      alert('Google login successful! Redirecting to dashboard...');
-      window.location.href = '/dashboard';
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(apiError.response?.data?.message || 'Google login failed.');
-    } finally {
-      setGoogleLoading(false);
-    }
+    router.push(`${process.env.NEXT_PUBLIC_API_URL}/Oauth2/google`);
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
