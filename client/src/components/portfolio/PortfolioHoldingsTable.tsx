@@ -1,4 +1,6 @@
+import { useTradeStore } from '@/store/tradeStore';
 import { ArrowUpRight, ArrowDownRight, Eye } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type Holding = {
   asset: string;
@@ -15,6 +17,14 @@ type PortfolioHoldingsTableProps = {
 export default function PortfolioHoldingsTable({
   holdings,
 }: PortfolioHoldingsTableProps) {
+  const { fetchStockDetails } = useTradeStore();
+  const router = useRouter();
+
+  const handleViewHolding = (asset: string) => () => {
+    fetchStockDetails(asset);
+    router.push('/trade');
+  };
+
   return (
     <div className='bg-surface rounded-xl border border-border shadow-sm overflow-hidden'>
       <div className='p-6 border-b border-border'>
@@ -130,7 +140,10 @@ export default function PortfolioHoldingsTable({
                       </div>
                     </td>
                     <td className='px-6 py-4 text-right'>
-                      <button className='inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold text-sm transition-all hover:shadow-md'>
+                      <button
+                        onClick={handleViewHolding(holding.asset)}
+                        className='inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold text-sm transition-all hover:shadow-md'
+                      >
                         <Eye className='w-4 h-4' /> View
                       </button>
                     </td>
