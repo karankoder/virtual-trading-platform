@@ -1,5 +1,4 @@
 import {
-  ArrowDown,
   ArrowDownRight,
   ArrowUpRight,
   DollarSign,
@@ -43,7 +42,7 @@ export default function PortfolioOverview() {
             {totalPortfolioPL >= 0 ? (
               <ArrowUpRight className='w-4 h-4 text-white' />
             ) : (
-              <ArrowDownRight className='w-4 h-4 text-white' />
+              <ArrowDownRight className='w-4 h-4 text-white rotate-180' />
             )}
             <span className='text-sm text-white/90 font-semibold'>
               {totalPortfolioPL >= 0 ? '+' : ''}₹
@@ -62,11 +61,24 @@ export default function PortfolioOverview() {
             <TrendingUp className='w-5 h-5 text-[var(--color-success)]' />
           </div>
         </div>
-        <p className='text-3xl font-bold text-[var(--color-success)] mb-1'>
-          +₹{totalPL.toFixed(0)}
+        <p
+          className={`text-3xl font-bold ${
+            totalPL >= 0
+              ? 'text-[var(--color-success)]'
+              : 'text-[var(--color-danger)]'
+          } mb-1`}
+        >
+          ₹{totalPL.toFixed(0)}
         </p>
-        <span className='text-sm text-[var(--color-success)] font-semibold'>
-          +{totalPLPercent.toFixed(2)}%
+        <span
+          className={`text-sm ${
+            totalPL >= 0
+              ? 'text-[var(--color-success)]'
+              : 'text-[var(--color-danger)]'
+          } font-semibold`}
+        >
+          {totalPL >= 0 ? '+' : ''}
+          {totalPLPercent.toFixed(2)}%
         </span>
       </div>
 

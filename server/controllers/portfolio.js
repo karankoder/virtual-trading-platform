@@ -25,7 +25,7 @@ export const buyAsset = async (req, res, next) => {
         }
 
         const { price, name } = await getStockDetails(asset);
-        console.log(price);
+
         const totalCost = price * quantity;
 
         const user = await User.findById(userId);
