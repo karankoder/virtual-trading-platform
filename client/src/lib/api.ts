@@ -1,7 +1,8 @@
 import axios, { AxiosError } from 'axios';
+import { backendUrl } from './constants';
 
 const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+  baseURL: `${backendUrl}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -49,4 +50,11 @@ export const marketService = {
   getQuote: (symbol: string) => api.get(`/market/quote?symbol=${symbol}`),
   getStatus: () => api.get('/market/status'),
   getMarketMovers: () => api.get('/market/movers'),
+};
+
+export const strategyService = {
+  create: (strategyData: any) => api.post('/strategy/new', strategyData),
+  getMyStrategies: () => api.get('/strategy'),
+  runBacktest: (backtestData: any) =>
+    api.post('/strategy/backtest', backtestData),
 };

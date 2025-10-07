@@ -45,23 +45,30 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       fetchPortfolio();
     }
 
-    // Start all polling intervals
-    const marketInterval = startMarketPolling();
-    const portfolioInterval = startPortfolioPolling();
+    let marketInterval: NodeJS.Timeout | null = null;
+    let portfolioInterval: NodeJS.Timeout | null = null;
     let tradeInterval: NodeJS.Timeout | null = null;
-    if (selectedStock) {
-      tradeInterval = startTradePolling(selectedStock.asset);
+
+    if (marketStatus === 'OPEN') {
+      marketInterval = startMarketPolling();
+      portfolioInterval = startPortfolioPolling();
+      if (selectedStock) {
+        tradeInterval = startTradePolling(selectedStock.asset);
+      }
     }
 
-    // Cleanup function to stop polling when the component unmounts
     return () => {
-      stopMarketPolling(marketInterval);
-      stopPortfolioPolling(portfolioInterval);
-      if (tradeInterval) {
-        stopTradePolling(tradeInterval);
-      }
+      if (marketInterval) stopMarketPolling(marketInterval);
+      if (portfolioInterval) stopPortfolioPolling(portfolioInterval);
+      if (tradeInterval) stopTradePolling(tradeInterval);
     };
-  }, [isAuthenticated, isInitializing, fetchPortfolio, selectedStock]);
+  }, [
+    isAuthenticated,
+    isInitializing,
+    fetchPortfolio,
+    selectedStock,
+    marketStatus,
+  ]);
 
   useEffect(() => {
     if (!isPortfolioLoading) {

@@ -3,6 +3,7 @@ import "./utils/config.js";
 import userRouter from "./routes/user.js";
 import marketRouter from "./routes/market.js";
 import portfolioRouter from "./routes/portfolio.js";
+import strategyRouter from "./routes/strategy.js";
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middlewares/error.js";
 import passport from "passport";
@@ -63,6 +64,7 @@ app.get(
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/market", marketRouter);
 app.use("/api/v1/portfolio", portfolioRouter);
+app.use("/api/v1/strategy", strategyRouter);
 
 app.get("/", (req, res) => {
     res.send("Server is working");

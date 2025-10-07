@@ -15,6 +15,7 @@ import {
   ArrowDownRight,
   User,
   BarChart2,
+  Puzzle,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { appName } from '@/lib/constants';
@@ -45,6 +46,7 @@ const Sidebar = ({ user, portfolio }: SidebarProps) => {
     { name: 'Trade', path: '/trade', icon: TrendingUp },
     { name: 'Portfolio', path: '/portfolio', icon: Wallet },
     { name: 'History', path: '/history', icon: History },
+    { name: 'Strategies', path: '/strategies', icon: Puzzle },
   ];
 
   const formatCurrency = (amount: number) => {
