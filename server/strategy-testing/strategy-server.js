@@ -5,18 +5,6 @@ import cors from "cors";
 const app = express();
 app.use(express.json());
 
-app.use(
-    cors({
-        origin: [
-            process.env.LOCAL_FRONTEND_URL,
-            process.env.FRONTEND_URL,
-            process.env.FRONTEND_URL2,
-        ],
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
-    }),
-);
-
 let recentCloses = [];
 
 app.post("/", (req, res) => {
