@@ -2,6 +2,7 @@ import { Strategy } from "../models/strategy.js";
 import ErrorHandler from "../middlewares/error.js";
 import axios from "axios";
 import yahooFinance from "yahoo-finance2";
+import { redisClient } from "../config/redis.js";
 
 export const createStrategy = async (req, res, next) => {
     try {
@@ -50,6 +51,15 @@ export const runBacktest = async (req, res, next) => {
             endDate = new Date(),
         } = req.body;
 
+        const startDateStr = new Date(startDate).toISOString().split("T")[0];
+        const endDateStr = new Date(endDate).toISOString().split("T")[0];
+
+        const cacheKey = `backtest:${strategyId}:${asset}:${initialCapital}:${startDateStr}:${endDateStr}`;
+        const cachedResult = await redisClient.get(cacheKey);
+        if (cachedResult) {
+            return res.status(200).json(JSON.parse(cachedResult));
+        }
+
         const strategy = await Strategy.findOne({
             _id: strategyId,
             user: req.user._id,
@@ -58,14 +68,33 @@ export const runBacktest = async (req, res, next) => {
             return next(new ErrorHandler("Strategy not found", 404));
         }
 
-        const historicalData = await yahooFinance.chart(asset, {
-            period1: startDate,
-            period2: endDate,
-            interval: "1d",
-        });
-        const cleanQuotes = historicalData.quotes.filter(
-            (q) => q && q.open && q.high && q.low && q.close,
-        );
+        const historicalCacheKey = `historical:${asset}:${startDateStr}:${endDateStr}:1d`;
+
+        let cleanQuotes;
+
+        const cachedHistoricalData = await redisClient.get(historicalCacheKey);
+
+        if (cachedHistoricalData) {
+            cleanQuotes = JSON.parse(cachedHistoricalData);
+        } else {
+            const historicalData = await yahooFinance.chart(asset, {
+                period1: startDate,
+                period2: endDate,
+                interval: "1d",
+            });
+            const filteredQuotes = historicalData.quotes.filter(
+                (q) => q && q.open && q.high && q.low && q.close,
+            );
+
+            if (filteredQuotes.length > 0) {
+                await redisClient.setEx(
+                    historicalCacheKey,
+                    86400,
+                    JSON.stringify(filteredQuotes),
+                );
+            }
+            cleanQuotes = filteredQuotes;
+        }
 
         if (cleanQuotes.length === 0) {
             return next(
@@ -184,16 +213,6 @@ export const runBacktest = async (req, res, next) => {
                 ? (profitableTrades / totalSellTrades) * 100
                 : 0;
 
-        // // Max Drawdown calculation
-        // let peak = portfolioValues[0];
-        // let maxDrawdown = 0;
-
-        // for (const value of portfolioValues) {
-        //     if (value > peak) peak = value;
-        //     const drawdown = ((peak - value) / peak) * 100;
-        //     if (drawdown > maxDrawdown) maxDrawdown = drawdown;
-        // }
-
         // Profit Factor calculation
         let grossProfit = 0,
             grossLoss = 0;
@@ -231,6 +250,8 @@ export const runBacktest = async (req, res, next) => {
 
         strategy.backtestResults.push(result);
         await strategy.save();
+
+        await redisClient.setEx(cacheKey, 3600, JSON.stringify(result));
 
         res.status(200).json(result);
     } catch (err) {

@@ -3,16 +3,20 @@ import { User } from "../models/user.js";
 import { Trade } from "../models/trade.js";
 import { Portfolio } from "../models/portfolio.js";
 import ErrorHandler from "../middlewares/error.js";
+import { redisClient } from "../config/redis.js";
+
+const CACHE_TTL = 10;
 
 const getStockDetails = async (asset) => {
     const quote = await yahooFinance.quote(asset);
     if (!quote || !quote.regularMarketPrice || !quote.longName) {
         throw new ErrorHandler(`Could not fetch details for ${asset}`, 404);
     }
-    return {
+    const data = {
         price: quote.regularMarketPrice,
         name: quote.longName,
     };
+    return data;
 };
 
 export const buyAsset = async (req, res, next) => {
@@ -141,12 +145,29 @@ export const getPortfolioData = async (req, res, next) => {
         let enrichedPortfolio = [];
 
         if (symbols.length > 0) {
-            const quotes = await yahooFinance.quote(symbols);
+            const quotes = await Promise.all(
+                symbols.map(async (symbol) => {
+                    const cacheKey = `quote:${symbol}`;
+                    const cached = await redisClient.get(cacheKey);
+                    if (cached) return JSON.parse(cached);
+
+                    const quote = await yahooFinance.quote(symbol);
+                    const data = {
+                        symbol,
+                        price: quote.regularMarketPrice,
+                        name: quote.longName,
+                    };
+                    await redisClient.setEx(
+                        cacheKey,
+                        CACHE_TTL,
+                        JSON.stringify(data),
+                    );
+                    return data;
+                }),
+            );
+
             const priceMap = new Map(
-                quotes.map((q) => [
-                    q.symbol,
-                    { price: q.regularMarketPrice, name: q.longName },
-                ]),
+                quotes.map((q) => [q.symbol, { price: q.price, name: q.name }]),
             );
 
             enrichedPortfolio = portfolioFromDB.map((item) => {

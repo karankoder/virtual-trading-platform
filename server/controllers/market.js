@@ -42,6 +42,23 @@ const getChartQueryOptions = (timeframe) => {
     return options;
 };
 
+const getCacheDuration = (timeframe) => {
+    switch (timeframe) {
+        case "1D":
+            return 60;
+        case "1W":
+            return 300;
+        case "3M":
+            return 60 * 60;
+        case "1Y":
+            return 60 * 60 * 24;
+        case "ALL":
+            return 60 * 60 * 24 * 7;
+        default:
+            return 300;
+    }
+};
+
 const nifty50 = [
     "RELIANCE.NS",
     "TCS.NS",
@@ -98,7 +115,12 @@ export const getOhlcData = async (req, res, next) => {
                 close: d.close,
             }));
 
-        await redisClient.setEx(cacheKey, 300, JSON.stringify(formattedData));
+        const cacheDuration = getCacheDuration(timeframe);
+        await redisClient.setEx(
+            cacheKey,
+            cacheDuration,
+            JSON.stringify(formattedData),
+        );
 
         res.status(200).json(formattedData);
     } catch (err) {
