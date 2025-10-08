@@ -1,6 +1,6 @@
 # AlgoArena — Extensible Virtual Trading Platform
 
-[Live Demo](https://algo-arena-zeta.vercel.app/) <!-- Replace with your actual URL -->
+([Demo Video](https://www.loom.com/share/883a5486587e4354bb889ecfbbb594dc?sid=fd8f6f3e-a602-4a47-94fe-6426a5e01703)) <!-- Replace with your actual URL -->
 
 A full‑stack virtual trading platform focused on the Indian equity markets (NSE/BSE). AlgoArena provides a risk‑free environment to practice trading strategies, manage a virtual portfolio, and build market‑aware applications. This README documents the Part A (Foundational Trading Platform) features and setup.
 
